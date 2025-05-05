@@ -6,7 +6,7 @@ public class Record{
 	private int studySatisfaction;
 	private String sleepDuration;
 	private String dietaryHabits;
-	private String suicidalThoughts;
+	private boolean suicidalThoughts;
 	private int studyHours;
 	private int financialStress;
 	private boolean familyHistory;
@@ -59,10 +59,10 @@ public class Record{
     	this.dietaryHabits = dietaryHabits; 
     }
 
-    public String getSuicidalThoughts(){ 
+    public boolean getSuicidalThoughts(){ 
     	return suicidalThoughts; 
     }
-    public void setSuicidalThoughts(String suicidalThoughts){ 
+    public void setSuicidalThoughts(boolean suicidalThoughts){ 
     	this.suicidalThoughts = suicidalThoughts; 
     }
 

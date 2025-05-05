@@ -1,16 +1,25 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserInterface {
     private JFrame frame;
+    private Forest forest;
+    private WellnessFeedback feedback;
 
     public UserInterface() {
+        // Initialize core components
         frame = new JFrame("Depression Prediction Program");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        frame.setSize(500, 400);
         frame.setLayout(new BorderLayout());
+
+        // Initialize model and feedback helper
+        forest = new Forest();
+        feedback = new WellnessFeedback();
     }
 
     public void displayMenu() {
@@ -35,11 +44,116 @@ public class UserInterface {
     }
 
     public void displayTrainingScreen() {
-        JOptionPane.showMessageDialog(frame, "Training screen placeholder.\nUpload your data here.");
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Select CSV Data File");
+        int result = chooser.showOpenDialog(frame);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            try {
+                RecordCollection data = RecordCollection.loadFromCSV(file.getAbsolutePath());
+                forest.trainForest(data);
+                JOptionPane.showMessageDialog(frame,
+                    "Training complete on " + data.size() + " records.",
+                    "Training Success", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frame,
+                    "Error during training: " + ex.getMessage(),
+                    "Training Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     public void displayUserDataScreen() {
-        JOptionPane.showMessageDialog(frame, "User data input placeholder.\nAsk questions here.");
+        // Build form panel
+        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+
+        // Gender
+        panel.add(new JLabel("Gender:"));
+        JComboBox<String> genderBox = new JComboBox<>(new String[]{"Male", "Female", "Other"});
+        panel.add(genderBox);
+
+        // Age
+        panel.add(new JLabel("Age:"));
+        JTextField ageField = new JTextField();
+        panel.add(ageField);
+
+        // Academic Pressure (0-5)
+        panel.add(new JLabel("Academic Pressure (0-5):"));
+        JSpinner pressureSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 5, 1));
+        panel.add(pressureSpinner);
+
+        // Study Satisfaction (0-5)
+        panel.add(new JLabel("Study Satisfaction (0-5):"));
+        JSpinner satisfactionSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 5, 1));
+        panel.add(satisfactionSpinner);
+
+        // Sleep Duration
+        panel.add(new JLabel("Sleep Duration:"));
+        JComboBox<String> sleepBox = new JComboBox<>(new String[]{
+            "< 5 hours", "5-6 hours", "6-7 hours", "7-8 hours", "> 8 hours"
+        });
+        panel.add(sleepBox);
+
+        // Dietary Habits
+        panel.add(new JLabel("Dietary Habits:"));
+        JComboBox<String> dietBox = new JComboBox<>(new String[]{
+            "Unhealthy", "Moderate", "Healthy", "Very Healthy"
+        });
+        panel.add(dietBox);
+
+        // Suicidal Thoughts
+        panel.add(new JLabel("Suicidal Thoughts:"));
+        JCheckBox suicidalBox = new JCheckBox("Yes");
+        panel.add(suicidalBox);
+
+        // Study Hours
+        panel.add(new JLabel("Study Hours:"));
+        JTextField hoursField = new JTextField();
+        panel.add(hoursField);
+
+        // Financial Stress (1-5)
+        panel.add(new JLabel("Financial Stress (1-5):"));
+        JSpinner financeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 5, 1));
+        panel.add(financeSpinner);
+
+        // Family History
+        panel.add(new JLabel("Family History of Depression:"));
+        JCheckBox familyBox = new JCheckBox("Yes");
+        panel.add(familyBox);
+
+        // Show dialog
+        int option = JOptionPane.showConfirmDialog(
+            frame, panel, "Enter Your Information",
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (option == JOptionPane.OK_OPTION) {
+            try {
+                // Create and populate record
+                Record record = new Record();
+                record.setGender((String) genderBox.getSelectedItem());
+                record.setAge(Integer.parseInt(ageField.getText()));
+                record.setAcademicPressure((int) pressureSpinner.getValue());
+                record.setStudySatisfaction((int) satisfactionSpinner.getValue());
+                record.setSleepDuration((String) sleepBox.getSelectedItem());
+                record.setDietaryHabits((String) dietBox.getSelectedItem());
+                record.setSuicidalThoughts(suicidalBox.isSelected());
+                record.setStudyHours(Integer.parseInt(hoursField.getText()));
+                record.setFinancialStress((int) financeSpinner.getValue());
+                record.setFamilyHistory(familyBox.isSelected());
+
+                // Predict and gather factors
+                float score = forest.predictScore(record);
+                List<String> factors = feedback.obtainFactors(record, forest);
+
+                // Display results
+                displayWellnessScore(score, factors);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frame,
+                    "Invalid input: " + ex.getMessage(),
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     public void displayWellnessScore(float score, List<String> factors) {
@@ -49,9 +163,11 @@ public class UserInterface {
         for (String factor : factors) {
             message.append("- ").append(factor).append("\n");
         }
-        JOptionPane.showMessageDialog(frame, message.toString());
+        JOptionPane.showMessageDialog(
+            frame, message.toString(), "Wellness Results", JOptionPane.INFORMATION_MESSAGE
+        );
     }
-    
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             UserInterface ui = new UserInterface();

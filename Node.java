@@ -1,18 +1,17 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class Node {
     
     // FIELDS
-    private String attribute;  // the attribute on which the node is split
-    private double numericalValue;  // the value on which the node is split (if the node is split on numerical data)
-    private String categoricalValue;  // the value on which the node is split (if the node is split on categorical data)
-    private boolean terminal;  // whether the node is terminal or not
-    private Node left;  // the left child of the current node
-    private Node right;  // the right child of the current node
-    private RecordCollection subset;  // the subset of the RecordCollection that this node is splitting
+    private String attribute;            // the attribute on which the node is split
+    private double numericalValue;       // the value on which the node is split (if numerical)
+    private String categoricalValue;     // the value on which the node is split (if categorical)
+    private boolean terminal;            // whether the node is terminal or not
+    private Node left;                   // the left child of the current node
+    private Node right;                  // the right child of the current node
+    private RecordCollection subset;     // the subset this node is splitting
 
     // CONSTRUCTORS
     public Node() {
@@ -23,123 +22,77 @@ public class Node {
         this.subset = subset;
     }
 
-    // METHODS
-    // get attribute
-    public String getAttribute() {
-        return attribute;
-    }
+    // ACCESSORS
+    public String getAttribute() { return attribute; }
+    public double getNumericalValue() { return numericalValue; }
+    public String getCategoricalValue() { return categoricalValue; }
+    public Node getLeftChild() { return left; }
+    public Node getRightChild() { return right; }
+    public RecordCollection subset() { return subset; }
+    public boolean isTerminal() { return terminal; }
 
-    // get the value (if the value is numerical)
-    public double getNumericalValue() {
-        return numericalValue;
-    }
-
-    // get the value (if the value is categorical)
-    public String getCategoricalValue() {
-        return categoricalValue;
-    }
-
-    // get the left child
-    public Node getLeftChild() {
-        return left;
-    }
-
-    // get the right child
-    public Node getRightChild() {
-        return right;
-    }
-
-    // get the subset
-    public RecordCollection subset() {
-        return subset;
-    }
-
-    public boolean isTerminal() {
-        return terminal;
-    }
-
-    // take a Record object and evaluate it based on the node's decision condition
+    // Evaluate a record by following the split condition
     public Node evaluate(Record record) {
         switch (attribute) {
             case "gender":
-                if (record.getGender() == categoricalValue) return left;
-                else return right;
-                break;
+                return record.getGender().equals(categoricalValue) ? left : right;  // Changed: removed unreachable breaks & use equals
             case "age":
-                if (record.getAge() < numericalValue) return left;
-                else return right;
-                break;
+                return record.getAge() < numericalValue ? left : right;              // Changed: removed unreachable breaks
             case "academicPressure":
-                if (record.getAcademicPressure() < numericalValue) return left;
-                else return right;
-                break;
+                return record.getAcademicPressure() < numericalValue ? left : right; // Changed: removed unreachable breaks
             case "studySatisfaction":
-                if (record.getStudySatisfaction() < numericalValue) return left;
-                else return right;
-                break;
+                return record.getStudySatisfaction() < numericalValue ? left : right;// Changed: removed unreachable breaks
             case "sleepDuration":
-                if (record.getSleepDuration() == categoricalValue) return left;
-                else return right;
-                break;
+                return record.getSleepDuration().equals(categoricalValue) ? left : right; // Changed: removed breaks & use equals
             case "dietaryHabits":
-                if (record.getDietaryHabits() == categoricalValue) return left;
-                else return right;
-                break;
+                return record.getDietaryHabits().equals(categoricalValue) ? left : right; // Changed: removed breaks & use equals
             case "suicidalThoughts":
-                if (record.getSuicidalThoughts()) return left;
-                else return right;
-                break;
+                return record.getSuicidalThoughts() ? left : right;                  // Changed: removed breaks
             case "studyHours":
-                if (record.getStudyHours() < numericalValue) return left;
-                else return right;
-                break;
+                return record.getStudyHours() < numericalValue ? left : right;       // Changed: removed breaks
             case "financialStress":
-                if (record.getFinancialStress() < numericalValue) return left;
-                else return right;
-                break;
+                return record.getFinancialStress() < numericalValue ? left : right;  // Changed: removed breaks
             case "familyHistory":
-                if (record.getFamilyHistory()) return left;
-                else return right;
-                break;
+                return record.getFamilyHistory() ? left : right;                     // Changed: removed breaks
             default:
-                throw new Exception("attribute type not found");
+                throw new RuntimeException("attribute type not found: " + attribute); // Changed: unchecked exception
         }
     }
 
-    // takes a RecordCollection and splits it into two groups, maximizing accuracy
+    // Split this node’s subset into two child nodes
     public void split(RecordCollection data) {
-        // set subset to data
         subset = data;
 
-        // checks if the node should be terminal. if not, split the node on each potential attribute
         if (data.percentageOfZeros() == 0 || data.percentageOfZeros() == 1) {
             terminal = true;
         } else {
             terminal = false;
 
-            String bestAttribute;  // stores the current best attribute
-            double bestNumericalValue;  // stores the current best value to split on (assuming attribute is numerical)
-            String bestCategoricalValue;  // stores the current best value to split on (assuming attribute is categorical)
-            double bestScore = 0;  // stores the score associated with the current best attribute
-            String[] attributeList = {"gender", "age", "academicPressure", "studySatisfaction", "sleepDuration", "dietaryHabits",
-                                      "suicidalThoughts", "studyHours", "financialStress", "familyHistory"};  // stores the attributes to attempt to split on
-            
-            // attempt a split on each attribute
+            // Changed: initialize these to avoid “might not have been initialized”
+            String bestAttribute = null;
+            double bestNumericalValue = 0;
+            String bestCategoricalValue = null;
+            double bestScore = -1;
+
+            String[] attributeList = {
+                "gender", "age", "academicPressure", "studySatisfaction",
+                "sleepDuration", "dietaryHabits", "suicidalThoughts",
+                "studyHours", "financialStress", "familyHistory"
+            };
+
             for (String a : attributeList) {
                 double currentNumericalValue = 0;
                 String currentCategoricalValue = null;
 
-                // get the value to split on
-                if (a == "age" || a == "academicPressure" || a == "studySatisfaction" || a == "studyHours" || a == "financialStress") {
+                if (a.equals("age") || a.equals("academicPressure") ||
+                    a.equals("studySatisfaction") || a.equals("studyHours") ||
+                    a.equals("financialStress")) {
                     currentNumericalValue = getValueForNumericalSplit(a);
-                } else if (a == "gender" || a == "sleepDuration" || a == "dietaryHabits") {
+                } else {
                     currentCategoricalValue = getValueForCategoricalSplit(a);
                 }
 
-                // get the score from the split
                 double currentScore = getScoreFromSplit(a, currentNumericalValue, currentCategoricalValue);
-
-                // check if the current split > the current best stored split
                 if (currentScore > bestScore) {
                     bestScore = currentScore;
                     bestAttribute = a;
@@ -148,46 +101,35 @@ public class Node {
                 }
             }
 
-            // set the attribute & value to the output of the best split
+            // set the chosen split
             attribute = bestAttribute;
             numericalValue = bestNumericalValue;
             categoricalValue = bestCategoricalValue;
 
-            // create the leaf nodes
             setLeafNodes();
         }
     }
 
-    // PRIVATE HELPER METHODS
-    // get the value to split on for a numerical value
+    // PRIVATE HELPERS
+
     private double getValueForNumericalSplit(String attribute) {
-        double bestValue;
-        double bestScore = 0;
+        // Changed: initialize to avoid “might not have been initialized”
+        double bestValue = 0;
+        double bestScore = -1;
+
         for (Record record : subset) {
-            // get a value to attempt to split on
             double currentValue;
             switch (attribute) {
-                case "age":
-                    currentValue = record.getAge();
-                    break;
-                case "academicPressure":
-                    currentValue = record.getAcademicPressure();
-                    break;
-                case "studySatisfaction":
-                    currentValue = record.getStudySatisfaction();
-                    break;
-                case "studyHours":
-                    currentValue = record.getStudyHours();
-                    break;
-                case "financialStress":
-                    currentValue = record.getFinancialStress();
-                    break;
+                case "age":               currentValue = record.getAge();              break;
+                case "academicPressure":  currentValue = record.getAcademicPressure(); break;
+                case "studySatisfaction": currentValue = record.getStudySatisfaction();break;
+                case "studyHours":        currentValue = record.getStudyHours();       break;
+                case "financialStress":   currentValue = record.getFinancialStress();  break;
                 default:
-                    throw new Exception("Attribute type not found");
+                    throw new RuntimeException("Attribute type not found: " + attribute); // Changed
             }
 
-            // attempt a split
-            RecordCollection leftSubset = new RecordCollection();
+            RecordCollection leftSubset  = new RecordCollection();
             RecordCollection rightSubset = new RecordCollection();
             for (Record r : subset) {
                 switch (attribute) {
@@ -212,89 +154,81 @@ public class Node {
                         else rightSubset.add(r);
                         break;
                     default:
-                        throw new Exception("Attribute type not found");
+                        throw new RuntimeException("Attribute type not found: " + attribute); // Changed
                 }
             }
 
-            // check the output of the split and calculate a score
-            double currentScore = leftSubset.percentageOfZeros() + rightSubset.percentageOfZeros();
-            currentScore = currentScore > 0.5 ? currentScore : 1 - currentScore;
+            double score = leftSubset.percentageOfZeros() + rightSubset.percentageOfZeros();
+            score = score > 0.5 ? score : 1 - score;
 
-            // if the current score > best score, set the new value to split on
-            if (currentScore > bestScore) {
-                bestScore = currentScore;
+            if (score > bestScore) {
+                bestScore = score;
                 bestValue = currentValue;
             }
         }
         return bestValue;
     }
 
-    // get the value to split on for a categorical value
     private String getValueForCategoricalSplit(String attribute) {
-        String bestValue;
-        double bestScore = 0;
-        
-        // get a value to attempt to split on
-        ArrayList<String> valuesToCheck;
+        // Changed: initialize to avoid “might not have been initialized”
+        String bestValue = null;
+        double bestScore = -1;
+
+        List<String> valuesToCheck;
         switch (attribute) {
             case "gender":
-                valuesToCheck = new ArrayList<>(Arrays.asList("Male", "Female", "Other"));
+                valuesToCheck = Arrays.asList("Male", "Female", "Other");
                 break;
             case "sleepDuration":
-                valuesToCheck = new ArrayList<>(Arrays.asList("Less than 5 hours", "5-6 hours", "7-8 hours", "More than 8 hours", "Other"));
+                valuesToCheck = Arrays.asList("< 5 hours", "5-6 hours", "6-7 hours", "7-8 hours", "> 8 hours");
                 break;
             case "dietaryHabits":
-                valuesToCheck = new ArrayList<>(Arrays.asList("Unhealthy", "Moderate", "Healthy", "Other"));
+                valuesToCheck = Arrays.asList("Unhealthy", "Moderate", "Healthy", "Very Healthy");
                 break;
             default:
-                throw new Exception("Attribute type not found");
+                throw new RuntimeException("Attribute type not found: " + attribute); // Changed
         }
 
-        // attempt a split
         for (String v : valuesToCheck) {
-            RecordCollection leftSubset = new RecordCollection();
+            RecordCollection leftSubset  = new RecordCollection();
             RecordCollection rightSubset = new RecordCollection();
             for (Record r : subset) {
                 switch (attribute) {
                     case "gender":
-                        if (r.getGender() == v) leftSubset.add(r);
+                        if (r.getGender().equals(v)) leftSubset.add(r);
                         else rightSubset.add(r);
                         break;
                     case "sleepDuration":
-                        if (r.getSleepDuration() == v) leftSubset.add(r);
+                        if (r.getSleepDuration().equals(v)) leftSubset.add(r);
                         else rightSubset.add(r);
                         break;
                     case "dietaryHabits":
-                        if (r.getDietaryHabits() == v) leftSubset.add(r);
+                        if (r.getDietaryHabits().equals(v)) leftSubset.add(r);
                         else rightSubset.add(r);
                         break;
                     default:
-                        throw new Exception("Attribute type not found");
+                        throw new RuntimeException("Attribute type not found: " + attribute); // Changed
                 }
             }
 
-            // check the output of the split and calculate a score
-            double currentScore = leftSubset.percentageOfZeros() + rightSubset.percentageOfZeros();
-            currentScore = currentScore > 0.5 ? currentScore : 1 - currentScore;
-
-            // if the current score > best score, set the new value to split on
-            if (currentScore > bestScore) {
-                bestScore = currentScore;
+            double score = leftSubset.percentageOfZeros() + rightSubset.percentageOfZeros();
+            score = score > 0.5 ? score : 1 - score;
+            if (score > bestScore) {
+                bestScore = score;
                 bestValue = v;
             }
         }
         return bestValue;
     }
 
-    // get score from a split
     private double getScoreFromSplit(String attribute, double numericalValue, String categoricalValue) {
-        RecordCollection leftSubset = new RecordCollection();
+        RecordCollection leftSubset  = new RecordCollection();
         RecordCollection rightSubset = new RecordCollection();
 
         for (Record record : subset) {
             switch (attribute) {
                 case "gender":
-                    if (record.getGender() == categoricalValue) leftSubset.add(record);
+                    if (record.getGender().equals(categoricalValue)) leftSubset.add(record);
                     else rightSubset.add(record);
                     break;
                 case "age":
@@ -310,11 +244,11 @@ public class Node {
                     else rightSubset.add(record);
                     break;
                 case "sleepDuration":
-                    if (record.getSleepDuration() == categoricalValue) leftSubset.add(record);
+                    if (record.getSleepDuration().equals(categoricalValue)) leftSubset.add(record);
                     else rightSubset.add(record);
                     break;
                 case "dietaryHabits":
-                    if (record.getDietaryHabits() == categoricalValue) leftSubset.add(record);
+                    if (record.getDietaryHabits().equals(categoricalValue)) leftSubset.add(record);
                     else rightSubset.add(record);
                     break;
                 case "suicidalThoughts":
@@ -334,23 +268,22 @@ public class Node {
                     else rightSubset.add(record);
                     break;
                 default:
-                    throw new Exception("attribute type not found");
+                    throw new RuntimeException("attribute type not found: " + attribute); // Changed
             }
         }
 
         double score = leftSubset.percentageOfZeros() + rightSubset.percentageOfZeros();
-        return (score > 0.5 ? score : 1 - score);
+        return score > 0.5 ? score : 1 - score;
     }
 
-    // set the leaf nodes
     private void setLeafNodes() {
-        RecordCollection leftSubset = new RecordCollection();
+        RecordCollection leftSubset  = new RecordCollection();
         RecordCollection rightSubset = new RecordCollection();
 
         for (Record record : subset) {
             switch (attribute) {
                 case "gender":
-                    if (record.getGender() == categoricalValue) leftSubset.add(record);
+                    if (record.getGender().equals(categoricalValue)) leftSubset.add(record);
                     else rightSubset.add(record);
                     break;
                 case "age":
@@ -366,11 +299,11 @@ public class Node {
                     else rightSubset.add(record);
                     break;
                 case "sleepDuration":
-                    if (record.getSleepDuration() == categoricalValue) leftSubset.add(record);
+                    if (record.getSleepDuration().equals(categoricalValue)) leftSubset.add(record);
                     else rightSubset.add(record);
                     break;
                 case "dietaryHabits":
-                    if (record.getDietaryHabits() == categoricalValue) leftSubset.add(record);
+                    if (record.getDietaryHabits().equals(categoricalValue)) leftSubset.add(record);
                     else rightSubset.add(record);
                     break;
                 case "suicidalThoughts":
@@ -390,11 +323,11 @@ public class Node {
                     else rightSubset.add(record);
                     break;
                 default:
-                    throw new Exception("attribute type not found");
+                    throw new RuntimeException("attribute type not found: " + attribute); // Changed
             }
         }
 
-        left = new Node(leftSubset);
+        left  = new Node(leftSubset);
         right = new Node(rightSubset);
     }
 }
