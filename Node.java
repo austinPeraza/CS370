@@ -180,8 +180,8 @@ public class Node {
                 }
             }
 
-            double score = leftSubset.percentageOfZeros() + rightSubset.percentageOfZeros();
-            score = score > 0.5 ? score : 1 - score;
+            double score = leftSubset.percentageOfZeros() + (1 - rightSubset.percentageOfZeros());
+            score = score > 1 ? score : 2 - score;
 
             if (score > bestScore) {
                 bestScore = score;
@@ -244,8 +244,9 @@ public class Node {
                 }
             }
 
-            double score = leftSubset.percentageOfZeros() + rightSubset.percentageOfZeros();
-            score = score > 0.5 ? score : 1 - score;
+            double score = leftSubset.percentageOfZeros() + (1 - rightSubset.percentageOfZeros());
+            score = score > 1 ? score : 2 - score;
+
             if (score > bestScore) {
                 bestScore = score;
                 bestValue = v;
@@ -305,8 +306,8 @@ public class Node {
             }
         }
 
-        double score = leftSubset.percentageOfZeros() + rightSubset.percentageOfZeros();
-        return score > 0.5 ? score : 1 - score;
+        double score = leftSubset.percentageOfZeros() + (1 - rightSubset.percentageOfZeros());
+        return score > 1 ? score : 2 - score;
     }
 
     private void setLeafNodes() {
