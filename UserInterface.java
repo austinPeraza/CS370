@@ -1,38 +1,35 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 
 public class UserInterface {
     private JFrame frame;
     private Forest forest;
     private WellnessFeedback feedback;
+    private boolean trainingCompleted = false;  
 
     public UserInterface() {
-        // Initialize core components
         frame = new JFrame("Depression Prediction Program");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 400);
         frame.setLayout(new BorderLayout());
 
-        // Initialize model and feedback helper
         forest = new Forest();
         feedback = new WellnessFeedback();
     }
 
     public void displayMenu() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 1, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(3, 1, 10, 10));
 
-        JButton trainButton = new JButton("Train Model with Your Data");
+        JButton trainButton    = new JButton("Train Model with Your Data");
         JButton userDataButton = new JButton("Enter Your Information");
-        JButton exitButton = new JButton("Exit");
+        JButton exitButton     = new JButton("Exit");
 
-        trainButton.addActionListener((ActionEvent e) -> displayTrainingScreen());
-        userDataButton.addActionListener((ActionEvent e) -> displayUserDataScreen());
-        exitButton.addActionListener((ActionEvent e) -> System.exit(0));
+        trainButton.addActionListener(e -> displayTrainingScreen());
+        userDataButton.addActionListener(e -> displayUserDataScreen());
+        exitButton.addActionListener(e -> System.exit(0));
 
         panel.add(trainButton);
         panel.add(userDataButton);
@@ -46,25 +43,91 @@ public class UserInterface {
     public void displayTrainingScreen() {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Select CSV Data File");
-        int result = chooser.showOpenDialog(frame);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File file = chooser.getSelectedFile();
-            try {
-                RecordCollection data = RecordCollection.loadFromCSV(file.getAbsolutePath());
-                forest.trainForest(data);
-                JOptionPane.showMessageDialog(frame,
-                    "Training complete on " + data.size() + " records.",
-                    "Training Success", JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(frame,
-                    "Error during training: " + ex.getMessage(),
-                    "Training Error", JOptionPane.ERROR_MESSAGE);
-            }
+        if (chooser.showOpenDialog(frame) != JFileChooser.APPROVE_OPTION) return;
+        File file = chooser.getSelectedFile();
+
+        RecordCollection data;
+        try {
+            data = RecordCollection.loadFromCSV(file.getAbsolutePath());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frame,
+                "Error loading CSV: " + ex.getMessage(),
+                "Load Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        JDialog progress = new JDialog(frame, "Training Forest…", true);
+        JLabel label = new JLabel("Starting…");
+        final int TOTAL = 10;
+        JProgressBar bar = new JProgressBar(0, TOTAL);
+        bar.setStringPainted(true);
+        bar.setIndeterminate(true);
+        JButton cancel = new JButton("Cancel");
+
+        progress.setLayout(new BorderLayout(8,8));
+        progress.add(label, BorderLayout.NORTH);
+        progress.add(bar, BorderLayout.CENTER);
+        progress.add(cancel, BorderLayout.SOUTH);
+        progress.pack();
+        progress.setLocationRelativeTo(frame);
+
+        SwingWorker<Void, Integer> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                forest.trainForest(data, (done, total) -> publish(done));
+                return null;
+            }
+
+            @Override
+            protected void process(List<Integer> chunks) {
+                if (bar.isIndeterminate()) {
+                    bar.setIndeterminate(false);
+                    label.setText("Built tree 0 of " + TOTAL + "…");
+                }
+                int done = chunks.get(chunks.size() - 1);
+                bar.setValue(done);
+                label.setText("Built tree " + done + " of " + TOTAL);
+            }
+
+            @Override
+            protected void done() {
+                progress.dispose();
+                try {
+                    get();  
+                    trainingCompleted = true;
+                    System.out.println("DEBUG: forest has " + forest.getTrees().size() + " trees after training.");
+                    JOptionPane.showMessageDialog(frame,
+                        "Training complete on " + data.size() + " records.",
+                        "Training Success", JOptionPane.INFORMATION_MESSAGE);
+                } catch (CancellationException e) {
+                    JOptionPane.showMessageDialog(frame,
+                        "Training cancelled.",
+                        "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame,
+                        "Error during training: " + ex.getCause().getMessage(),
+                        "Training Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+
+        cancel.addActionListener(e -> {
+            worker.cancel(true);
+            forest.cancelTraining();
+        });
+
+        worker.execute();
+        progress.setVisible(true);
     }
 
     public void displayUserDataScreen() {
-        // Build form panel
+        if (!trainingCompleted) {
+            JOptionPane.showMessageDialog(frame,
+                "Please train the model with your data before entering your information.",
+                "Model Not Trained", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
 
         // Gender
@@ -121,7 +184,6 @@ public class UserInterface {
         JCheckBox familyBox = new JCheckBox("Yes");
         panel.add(familyBox);
 
-        // Show dialog
         int option = JOptionPane.showConfirmDialog(
             frame, panel, "Enter Your Information",
             JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
@@ -129,7 +191,6 @@ public class UserInterface {
 
         if (option == JOptionPane.OK_OPTION) {
             try {
-                // Create and populate record
                 Record record = new Record();
                 record.setGender((String) genderBox.getSelectedItem());
                 record.setAge(Integer.parseInt(ageField.getText()));
@@ -142,11 +203,8 @@ public class UserInterface {
                 record.setFinancialStress((int) financeSpinner.getValue());
                 record.setFamilyHistory(familyBox.isSelected());
 
-                // Predict and gather factors
                 float score = forest.predictScore(record);
                 List<String> factors = feedback.obtainFactors(record, forest);
-
-                // Display results
                 displayWellnessScore(score, factors);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame,
@@ -158,13 +216,16 @@ public class UserInterface {
 
     public void displayWellnessScore(float score, List<String> factors) {
         StringBuilder message = new StringBuilder();
-        message.append(String.format("Your Wellness Score: %.2f (scale 0–1)\n", score));
+        message.append(String.format("Your Wellness Score: %.2f (scale 0–1)%n", score));
         message.append("Key contributing factors:\n");
         for (String factor : factors) {
             message.append("- ").append(factor).append("\n");
         }
         JOptionPane.showMessageDialog(
-            frame, message.toString(), "Wellness Results", JOptionPane.INFORMATION_MESSAGE
+            frame,
+            message.toString(),
+            "Wellness Results",
+            JOptionPane.INFORMATION_MESSAGE
         );
     }
 
