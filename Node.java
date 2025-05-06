@@ -31,6 +31,31 @@ public class Node {
     public RecordCollection subset() { return subset; }
     public boolean isTerminal() { return terminal; }
 
+    // Compare two Nodes to see if they are equal
+    @Override
+    public boolean equals(Object obj) {
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        } else {
+            Node other = (Node) obj;
+            if (this.left == null && this.right == null) {
+                return (this.left == other.getLeftChild() && this.right == getRightChild() && this.subset.equals(other.subset())) ? true : false;
+            } else if (this.left == null) {
+                return (this.left == other.getLeftChild() && this.right.equals(other.getRightChild()) && this.subset.equals(other.subset())) ? true : false;
+            } else if (this.right == null) {
+                return (this.left.equals(other.getLeftChild()) && this.right == getRightChild() && this.subset.equals(other.subset())) ? true : false;
+            } else {
+                return (this.left.equals(other.getLeftChild()) && this.right.equals(other.getRightChild()) && this.subset.equals(other.subset())) ? true : false;
+            }
+        }
+    }
+
+    // Print out the contents of the Node
+    @Override
+    public String toString() {
+        return subset.toString();
+    }
+
     // Evaluate a record by following the split condition
     public Node evaluate(Record record) {
         switch (attribute) {
@@ -88,7 +113,7 @@ public class Node {
                     a.equals("studySatisfaction") || a.equals("studyHours") ||
                     a.equals("financialStress")) {
                     currentNumericalValue = getValueForNumericalSplit(a);
-                } else {
+                } else if (a.equals("gender") || a.equals("sleepDuration") || a.equals("dietaryHabits")) {
                     currentCategoricalValue = getValueForCategoricalSplit(a);
                 }
 

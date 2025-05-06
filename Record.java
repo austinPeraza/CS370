@@ -16,6 +16,21 @@ public class Record{
 
 	}
 
+	public Record(String gender, int age, int academicPressure, int studySatisfaction, String sleepDuration, String dietaryHabits,
+				  boolean suicidalThoughts, int studyHours, int financialStress, boolean familyHistory, int wellnessScore) {
+		this.gender = gender;
+		this.age = age;
+		this.academicPressure = academicPressure;
+		this.studySatisfaction = studySatisfaction;
+		this.sleepDuration = sleepDuration;
+		this.dietaryHabits = dietaryHabits;
+		this.suicidalThoughts = suicidalThoughts;
+		this.studyHours = studyHours;
+		this.financialStress = financialStress;
+		this.familyHistory = familyHistory;
+		this.wellnessScore = wellnessScore;
+	}
+
 	public String getGender(){
 		return gender;
 	}
@@ -93,5 +108,24 @@ public class Record{
     public void setWellnessScore(int wellnessScore){ 
     	this.wellnessScore = wellnessScore; 
     }
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		} else {
+			Record other = (Record) obj;
+			return (this.gender.equals(other.getGender()) && this.age == other.getAge() && this.academicPressure == other.getAcademicPressure()
+				&& this.studySatisfaction == other.getStudySatisfaction() && this.sleepDuration.equals(other.getSleepDuration())
+				&& this.dietaryHabits.equals(other.getDietaryHabits()) && this.suicidalThoughts == other.getSuicidalThoughts() && this.studyHours == other.getStudyHours()
+				&& this.financialStress == other.getFinancialStress() && this.familyHistory == this.getFamilyHistory() && this.wellnessScore == other.getWellnessScore()) ? true : false;
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "[" + this.gender + "," + this.age + "," + this.academicPressure + "," + this.studySatisfaction + "," + this.sleepDuration + "," + this.dietaryHabits
+			   + "," + this.suicidalThoughts + "," + this.studyHours + "," + this.financialStress + "," + this.familyHistory + "," + this.wellnessScore + "]";
+	}
 }
 

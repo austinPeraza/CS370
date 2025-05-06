@@ -50,8 +50,33 @@ public class RecordCollection implements Iterable<Record> {
         return (double) zeroCount / collection.size();
     }
 
+    protected List<Record> collection() {
+        return collection;
+    }
+
     @Override
     public Iterator<Record> iterator() {
         return collection.iterator();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        } else {
+            RecordCollection other = (RecordCollection) obj;
+            if (this.size() != other.size()) return false;
+            return this.collection.containsAll(other.collection()) && other.collection().containsAll(this.collection) ? true : false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        String str = "";
+        for (Record record : collection) {
+            str += record.toString();
+            str += "\n";
+        }
+        return str;
     }
 }
