@@ -60,27 +60,27 @@ public class Node {
     public Node evaluate(Record record) {
         switch (attribute) {
             case "gender":
-                return record.getGender().equals(categoricalValue) ? left : right;  // Changed: removed unreachable breaks & use equals
+                return record.getGender().equals(categoricalValue) ? left : right;
             case "age":
-                return record.getAge() < numericalValue ? left : right;              // Changed: removed unreachable breaks
+                return record.getAge() < numericalValue ? left : right;
             case "academicPressure":
-                return record.getAcademicPressure() < numericalValue ? left : right; // Changed: removed unreachable breaks
+                return record.getAcademicPressure() < numericalValue ? left : right;
             case "studySatisfaction":
-                return record.getStudySatisfaction() < numericalValue ? left : right;// Changed: removed unreachable breaks
+                return record.getStudySatisfaction() < numericalValue ? left : right;
             case "sleepDuration":
-                return record.getSleepDuration().equals(categoricalValue) ? left : right; // Changed: removed breaks & use equals
+                return record.getSleepDuration().equals(categoricalValue) ? left : right;
             case "dietaryHabits":
-                return record.getDietaryHabits().equals(categoricalValue) ? left : right; // Changed: removed breaks & use equals
+                return record.getDietaryHabits().equals(categoricalValue) ? left : right;
             case "suicidalThoughts":
-                return record.getSuicidalThoughts() ? left : right;                  // Changed: removed breaks
+                return record.getSuicidalThoughts() ? left : right;
             case "studyHours":
-                return record.getStudyHours() < numericalValue ? left : right;       // Changed: removed breaks
+                return record.getStudyHours() < numericalValue ? left : right;
             case "financialStress":
-                return record.getFinancialStress() < numericalValue ? left : right;  // Changed: removed breaks
+                return record.getFinancialStress() < numericalValue ? left : right;
             case "familyHistory":
-                return record.getFamilyHistory() ? left : right;                     // Changed: removed breaks
+                return record.getFamilyHistory() ? left : right;
             default:
-                throw new RuntimeException("attribute type not found: " + attribute); // Changed: unchecked exception
+                throw new RuntimeException("attribute type not found: " + attribute);
         }
     }
 
@@ -93,7 +93,7 @@ public class Node {
         } else {
             terminal = false;
 
-            // Changed: initialize these to avoid “might not have been initialized”
+            // initialize best-split trackers
             String bestAttribute = null;
             double bestNumericalValue = 0;
             String bestCategoricalValue = null;
@@ -126,7 +126,6 @@ public class Node {
                 }
             }
 
-            // set the chosen split
             attribute = bestAttribute;
             numericalValue = bestNumericalValue;
             categoricalValue = bestCategoricalValue;
@@ -136,22 +135,20 @@ public class Node {
     }
 
     // PRIVATE HELPERS
-
     private double getValueForNumericalSplit(String attribute) {
-        // Changed: initialize to avoid “might not have been initialized”
         double bestValue = 0;
         double bestScore = -1;
 
         for (Record record : subset) {
             double currentValue;
             switch (attribute) {
-                case "age":               currentValue = record.getAge();              break;
+                case "age":               currentValue = record.getAge();               break;
                 case "academicPressure":  currentValue = record.getAcademicPressure(); break;
                 case "studySatisfaction": currentValue = record.getStudySatisfaction();break;
-                case "studyHours":        currentValue = record.getStudyHours();       break;
-                case "financialStress":   currentValue = record.getFinancialStress();  break;
+                case "studyHours":        currentValue = record.getStudyHours();        break;
+                case "financialStress":   currentValue = record.getFinancialStress();   break;
                 default:
-                    throw new RuntimeException("Attribute type not found: " + attribute); // Changed
+                    throw new RuntimeException("Attribute type not found: " + attribute);
             }
 
             RecordCollection leftSubset  = new RecordCollection();
@@ -179,7 +176,7 @@ public class Node {
                         else rightSubset.add(r);
                         break;
                     default:
-                        throw new RuntimeException("Attribute type not found: " + attribute); // Changed
+                        throw new RuntimeException("Attribute type not found: " + attribute);
                 }
             }
 
@@ -195,9 +192,6 @@ public class Node {
     }
 
     private String getValueForCategoricalSplit(String attribute) {
-        // Changed: initialize to avoid “might not have been initialized”
-        String bestValue = null;
-        double bestScore = -1;
 
         List<String> valuesToCheck;
         switch (attribute) {
@@ -210,10 +204,16 @@ public class Node {
             case "dietaryHabits":
                 valuesToCheck = Arrays.asList("Unhealthy", "Moderate", "Healthy", "Very Healthy");
                 break;
+            case "suicidalThoughts":
+            case "familyHistory":
+                valuesToCheck = Arrays.asList("true", "false");
+                break;
             default:
-                throw new RuntimeException("Attribute type not found: " + attribute); // Changed
+                throw new RuntimeException("Attribute type not found: " + attribute);
         }
 
+        String bestValue = null;
+        double bestScore = -1;
         for (String v : valuesToCheck) {
             RecordCollection leftSubset  = new RecordCollection();
             RecordCollection rightSubset = new RecordCollection();
@@ -231,8 +231,16 @@ public class Node {
                         if (r.getDietaryHabits().equals(v)) leftSubset.add(r);
                         else rightSubset.add(r);
                         break;
+                    case "suicidalThoughts":
+                        if (String.valueOf(r.getSuicidalThoughts()).equals(v)) leftSubset.add(r);
+                        else rightSubset.add(r);
+                        break;
+                    case "familyHistory":
+                        if (String.valueOf(r.getFamilyHistory()).equals(v)) leftSubset.add(r);
+                        else rightSubset.add(r);
+                        break;
                     default:
-                        throw new RuntimeException("Attribute type not found: " + attribute); // Changed
+                        throw new RuntimeException("Attribute type not found: " + attribute);
                 }
             }
 
@@ -293,7 +301,7 @@ public class Node {
                     else rightSubset.add(record);
                     break;
                 default:
-                    throw new RuntimeException("attribute type not found: " + attribute); // Changed
+                    throw new RuntimeException("attribute type not found: " + attribute);
             }
         }
 
@@ -348,7 +356,7 @@ public class Node {
                     else rightSubset.add(record);
                     break;
                 default:
-                    throw new RuntimeException("attribute type not found: " + attribute); // Changed
+                    throw new RuntimeException("attribute type not found: " + attribute);
             }
         }
 

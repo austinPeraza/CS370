@@ -1,4 +1,3 @@
-// RecordCollection.java
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -8,13 +7,35 @@ import java.util.List;
 public class RecordCollection implements Iterable<Record> {
     private List<Record> collection = new ArrayList<>();
 
-    /** Load a CSV with header and 11 columns (last is wellnessScore). */
+    
     public static RecordCollection loadFromCSV(String path) throws Exception {
         RecordCollection rc = new RecordCollection();
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String line = br.readLine(); // skip header
             while ((line = br.readLine()) != null) {
-                String[] f = line.split(",");
+                // include empty fields
+                String[] f = line.split(",", -1);
+                if (f.length < 11) {
+                    System.err.println("Skipping malformed line: " + line);
+                    continue;
+                }
+                // trim whitespace on each field
+                for (int i = 0; i < 11; i++) {
+                    f[i] = f[i].trim();
+                }
+                // skip rows with any empty field
+                boolean anyEmpty = false;
+                for (int i = 0; i < 11; i++) {
+                    if (f[i].isEmpty()) {
+                        anyEmpty = true;
+                        break;
+                    }
+                }
+                if (anyEmpty) {
+                    System.err.println("Skipping line with missing values: " + line);
+                    continue;
+                }
+
                 Record r = new Record();
                 r.setGender(f[0]);
                 r.setAge(Integer.parseInt(f[1]));
@@ -27,6 +48,7 @@ public class RecordCollection implements Iterable<Record> {
                 r.setFinancialStress(Integer.parseInt(f[8]));
                 r.setFamilyHistory(Boolean.parseBoolean(f[9]));
                 r.setWellnessScore(Integer.parseInt(f[10]));
+
                 rc.add(r);
             }
         }
