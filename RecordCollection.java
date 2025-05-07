@@ -43,10 +43,10 @@ public class RecordCollection implements Iterable<Record> {
                 r.setStudySatisfaction(Integer.parseInt(f[3]));
                 r.setSleepDuration(f[4]);
                 r.setDietaryHabits(f[5]);
-                r.setSuicidalThoughts(Boolean.parseBoolean(f[6]));  
+                r.setSuicidalThoughts(f[6].equalsIgnoreCase("yes"));  
                 r.setStudyHours(Integer.parseInt(f[7]));
                 r.setFinancialStress(Integer.parseInt(f[8]));
-                r.setFamilyHistory(Boolean.parseBoolean(f[9]));
+                r.setFamilyHistory(f[9].equalsIgnoreCase("yes"));
                 r.setWellnessScore(Integer.parseInt(f[10]));
 
                 rc.add(r);

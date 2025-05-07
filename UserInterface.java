@@ -104,10 +104,15 @@ public class UserInterface {
                         "Training cancelled.",
                         "Cancelled", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
+                    ex.printStackTrace();  // ✅ print full stack trace to console
+                    String message = (ex.getCause() != null && ex.getCause().getMessage() != null) ?
+                        ex.getCause().getMessage() :
+                        ex.getMessage();
                     JOptionPane.showMessageDialog(frame,
-                        "Error during training: " + ex.getCause().getMessage(),
+                        "Error during training: " + message,
                         "Training Error", JOptionPane.ERROR_MESSAGE);
                 }
+                    
             }
         };
 

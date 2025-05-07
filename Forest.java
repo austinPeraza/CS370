@@ -38,7 +38,12 @@ public class Forest {
             if (cancelRequested) break;
             RecordCollection sample = bootstrap(data);
             Tree t = new Tree();
-            t.buildTree(sample);
+            try {
+                t.buildTree(sample);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Error in Tree.buildTree: " + e.getMessage(), e);
+            }
             trees.add(t);
             if (listener != null) listener.onProgress(i + 1, TOTAL);
         }
