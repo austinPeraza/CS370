@@ -118,7 +118,7 @@ public class Record{
 			return (this.gender.equals(other.getGender()) && this.age == other.getAge() && this.academicPressure == other.getAcademicPressure()
 				&& this.studySatisfaction == other.getStudySatisfaction() && this.sleepDuration.equals(other.getSleepDuration())
 				&& this.dietaryHabits.equals(other.getDietaryHabits()) && this.suicidalThoughts == other.getSuicidalThoughts() && this.studyHours == other.getStudyHours()
-				&& this.financialStress == other.getFinancialStress() && this.familyHistory == this.getFamilyHistory() && this.wellnessScore == other.getWellnessScore()) ? true : false;
+				&& this.financialStress == other.getFinancialStress() && this.familyHistory == other.getFamilyHistory() && this.wellnessScore == other.getWellnessScore()) ? true : false;
 		}
 	}
 
