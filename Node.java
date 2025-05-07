@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -75,7 +74,7 @@ public class Node {
             return false;
         } else {
             Node other = (Node) obj;
-            if (!this.attribute.equals(other.getAttribute())) {
+            if (this.attribute != null && !this.attribute.equals(other.getAttribute())) {
                 return false;
             } else {
                 if (this.left == null && this.right == null) {

@@ -93,7 +93,8 @@ public class UnitTests {
         initializeArtificalDatasets();
         actualNode.split(artificalDataset2);
 
-        // assert that the children are equal & that the node split on academic pressure with the value 3
+        // assert that the children are equal & that the node split on academic pressure
+        // with the value 3
         assertEquals("academicPressure", actualNode.getAttribute());
         assertEquals(3, actualNode.getNumericalValue());
         assertEquals(expectedLeftChild, actualNode.getLeftChild());
@@ -122,7 +123,8 @@ public class UnitTests {
         initializeArtificalDatasets();
         actualNode.split(artificalDataset3);
 
-        // assert that the children are equal & that the node split on dietary habits with the value "healthy"
+        // assert that the children are equal & that the node split on dietary habits
+        // with the value "healthy"
         assertEquals("dietaryHabits", actualNode.getAttribute());
         assertEquals("Healthy", actualNode.getCategoricalValue());
         assertEquals(expectedLeftChild, actualNode.getLeftChild());
