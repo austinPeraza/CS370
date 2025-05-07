@@ -31,6 +31,13 @@ public class Node {
     public RecordCollection subset() { return subset; }
     public boolean isTerminal() { return terminal; }
 
+    // for testing
+    protected void setAttribute(String attribute) {this.attribute = attribute; }
+    protected void getNumericalValue(double numericalValue) { this.numericalValue = numericalValue; }
+    protected void getCategoricalValue(String categoricalValue) { this.categoricalValue = categoricalValue; }
+    protected void setLeftChild(Node left) { this.left = left; }
+    protected void setRightChild(Node right) { this.right = right; }
+
     // Compare two Nodes to see if they are equal
     @Override
     public boolean equals(Object obj) {
@@ -38,14 +45,18 @@ public class Node {
             return false;
         } else {
             Node other = (Node) obj;
-            if (this.left == null && this.right == null) {
-                return (this.left == other.getLeftChild() && this.right == getRightChild() && this.subset.equals(other.subset())) ? true : false;
-            } else if (this.left == null) {
-                return (this.left == other.getLeftChild() && this.right.equals(other.getRightChild()) && this.subset.equals(other.subset())) ? true : false;
-            } else if (this.right == null) {
-                return (this.left.equals(other.getLeftChild()) && this.right == getRightChild() && this.subset.equals(other.subset())) ? true : false;
+            if (this.attribute != other.getAttribute()) {
+                return false;
             } else {
-                return (this.left.equals(other.getLeftChild()) && this.right.equals(other.getRightChild()) && this.subset.equals(other.subset())) ? true : false;
+                if (this.left == null && this.right == null) {
+                    return (this.left == other.getLeftChild() && this.right == getRightChild() && this.subset.equals(other.subset())) ? true : false;
+                } else if (this.left == null) {
+                    return (this.left == other.getLeftChild() && this.right.equals(other.getRightChild()) && this.subset.equals(other.subset())) ? true : false;
+                } else if (this.right == null) {
+                    return (this.left.equals(other.getLeftChild()) && this.right == getRightChild() && this.subset.equals(other.subset())) ? true : false;
+                } else {
+                    return (this.left.equals(other.getLeftChild()) && this.right.equals(other.getRightChild()) && this.subset.equals(other.subset())) ? true : false;
+                }
             }
         }
     }
