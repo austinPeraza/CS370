@@ -20,39 +20,80 @@ public class Node {
         this.subset = subset;
     }
 
-    public String getAttribute() { return attribute; }
-    public double getNumericalValue() { return numericalValue; }
-    public String getCategoricalValue() { return categoricalValue; }
-    public Node getLeftChild() { return left; }
-    public Node getRightChild() { return right; }
-    public RecordCollection subset() { return subset; }
-    public boolean isTerminal() { return terminal; }
+    public String getAttribute() { 
+        return attribute;
+    }
+
+    public double getNumericalValue() { 
+        return numericalValue;
+    }
+
+    public String getCategoricalValue() { 
+        return categoricalValue;
+    }
+
+    public Node getLeftChild() { 
+        return left;
+    }
+
+    public Node getRightChild() { 
+        return right;
+    }
+
+    public RecordCollection subset() { 
+        return subset;
+    }
+
+    public boolean isTerminal() { 
+        return terminal;
+    }
 
     // for testing
-    protected void setAttribute(String attribute) {this.attribute = attribute; }
-    protected void getNumericalValue(double numericalValue) { this.numericalValue = numericalValue; }
-    protected void getCategoricalValue(String categoricalValue) { this.categoricalValue = categoricalValue; }
-    protected void setLeftChild(Node left) { this.left = left; }
-    protected void setRightChild(Node right) { this.right = right; }
+    protected void setAttribute(String attribute) {
+        this.attribute = attribute;
+    }
 
-    // Compare two Nodes to see if they are equal
+    protected void getNumericalValue(double numericalValue) {
+        this.numericalValue = numericalValue;
+    }
+
+    protected void getCategoricalValue(String categoricalValue) {
+        this.categoricalValue = categoricalValue;
+    }
+
+    protected void setLeftChild(Node left) {
+        this.left = left;
+    }
+
+    protected void setRightChild(Node right) {
+        this.right = right;
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if (this.getClass() != obj.getClass()){
+        if (this.getClass() != obj.getClass()) {
             return false;
-        } else{
+        } else {
             Node other = (Node) obj;
-            if (this.attribute != other.getAttribute()) {
+            if (!this.attribute.equals(other.getAttribute())) {
                 return false;
             } else {
                 if (this.left == null && this.right == null) {
-                    return (this.left == other.getLeftChild() && this.right == getRightChild() && this.subset.equals(other.subset())) ? true : false;
+                    return (this.left == other.getLeftChild() &&
+                            this.right == getRightChild() &&
+                            this.subset.equals(other.subset()));
                 } else if (this.left == null) {
-                    return (this.left == other.getLeftChild() && this.right.equals(other.getRightChild()) && this.subset.equals(other.subset())) ? true : false;
+                    return (this.left == other.getLeftChild() &&
+                            this.right.equals(other.getRightChild()) &&
+                            this.subset.equals(other.subset()));
                 } else if (this.right == null) {
-                    return (this.left.equals(other.getLeftChild()) && this.right == getRightChild() && this.subset.equals(other.subset())) ? true : false;
+                    return (this.left.equals(other.getLeftChild()) &&
+                            this.right == getRightChild() &&
+                            this.subset.equals(other.subset()));
                 } else {
-                    return (this.left.equals(other.getLeftChild()) && this.right.equals(other.getRightChild()) && this.subset.equals(other.subset())) ? true : false;
+                    return (this.left.equals(other.getLeftChild()) &&
+                            this.right.equals(other.getRightChild()) &&
+                            this.subset.equals(other.subset()));
                 }
             }
         }
@@ -65,25 +106,47 @@ public class Node {
 
     public Node evaluate(Record record) {
         switch (attribute) {
-            case "gender": return record.getGender().equals(categoricalValue) ? left : right;
-            case "age": return record.getAge() < numericalValue ? left : right;
-            case "academicPressure": return record.getAcademicPressure() < numericalValue ? left : right;
-            case "studySatisfaction": return record.getStudySatisfaction() < numericalValue ? left : right;
-            case "sleepDuration": return record.getSleepDuration().equals(categoricalValue) ? left : right;
-            case "dietaryHabits": return record.getDietaryHabits().equals(categoricalValue) ? left : right;
-            case "suicidalThoughts": return record.getSuicidalThoughts() ? left : right;
-            case "studyHours": return record.getStudyHours() < numericalValue ? left : right;
-            case "financialStress": return record.getFinancialStress() < numericalValue ? left : right;
-            case "familyHistory": return record.getFamilyHistory() ? left : right;
-            default: throw new RuntimeException("attribute type not found: " + attribute);
+            case "gender": {
+                return record.getGender().equals(categoricalValue) ? left : right;
+            }
+            case "age": {
+                return record.getAge() < numericalValue ? left : right;
+            }
+            case "academicPressure": {
+                return record.getAcademicPressure() < numericalValue ? left : right;
+            }
+            case "studySatisfaction": {
+                return record.getStudySatisfaction() < numericalValue ? left : right;
+            }
+            case "sleepDuration": {
+                return record.getSleepDuration().equals(categoricalValue) ? left : right;
+            }
+            case "dietaryHabits": {
+                return record.getDietaryHabits().equals(categoricalValue) ? left : right;
+            }
+            case "suicidalThoughts": {
+                return record.getSuicidalThoughts() ? left : right;
+            }
+            case "studyHours": {
+                return record.getStudyHours() < numericalValue ? left : right;
+            }
+            case "financialStress": {
+                return record.getFinancialStress() < numericalValue ? left : right;
+            }
+            case "familyHistory": {
+                return record.getFamilyHistory() ? left : right;
+            }
+            default: {
+                throw new RuntimeException("attribute type not found: " + attribute);
+            }
         }
     }
 
     public void split(RecordCollection data) {
         subset = data;
 
-        // ✅ stronger stopping condition
-        if (data == null || data.size() == 0 || data.size() == 1 || data.percentageOfZeros() == 0 || data.percentageOfZeros() == 1) {
+        if (data == null || data.size() == 0 || data.size() == 1 ||
+            data.percentageOfZeros() == 0 || data.percentageOfZeros() == 1) {
             terminal = true;
             return;
         }
@@ -141,23 +204,55 @@ public class Node {
         for (Record record : subset) {
             double currentValue;
             switch (attribute) {
-                case "age": currentValue = record.getAge(); break;
-                case "academicPressure": currentValue = record.getAcademicPressure(); break;
-                case "studySatisfaction": currentValue = record.getStudySatisfaction(); break;
-                case "studyHours": currentValue = record.getStudyHours(); break;
-                case "financialStress": currentValue = record.getFinancialStress(); break;
-                default: throw new RuntimeException("Attribute type not found: " + attribute);
+                case "age": {
+                    currentValue = record.getAge();
+                    break;
+                }
+                case "academicPressure": {
+                    currentValue = record.getAcademicPressure();
+                    break;
+                }
+                case "studySatisfaction": {
+                    currentValue = record.getStudySatisfaction();
+                    break;
+                }
+                case "studyHours": {
+                    currentValue = record.getStudyHours();
+                    break;
+                }
+                case "financialStress": {
+                    currentValue = record.getFinancialStress();
+                    break;
+                }
+                default: {
+                    throw new RuntimeException("Attribute type not found: " + attribute);
+                }
             }
 
             RecordCollection leftSubset = new RecordCollection();
             RecordCollection rightSubset = new RecordCollection();
             for (Record r : subset) {
                 switch (attribute) {
-                    case "age": if (r.getAge() < currentValue) leftSubset.add(r); else rightSubset.add(r); break;
-                    case "academicPressure": if (r.getAcademicPressure() < currentValue) leftSubset.add(r); else rightSubset.add(r); break;
-                    case "studySatisfaction": if (r.getStudySatisfaction() < currentValue) leftSubset.add(r); else rightSubset.add(r); break;
-                    case "studyHours": if (r.getStudyHours() < currentValue) leftSubset.add(r); else rightSubset.add(r); break;
-                    case "financialStress": if (r.getFinancialStress() < currentValue) leftSubset.add(r); else rightSubset.add(r); break;
+                    case "age": {
+                        if (r.getAge() < currentValue) { leftSubset.add(r); } else { rightSubset.add(r); }
+                        break;
+                    }
+                    case "academicPressure": {
+                        if (r.getAcademicPressure() < currentValue) { leftSubset.add(r); } else { rightSubset.add(r); }
+                        break;
+                    }
+                    case "studySatisfaction": {
+                        if (r.getStudySatisfaction() < currentValue) { leftSubset.add(r); } else { rightSubset.add(r); }
+                        break;
+                    }
+                    case "studyHours": {
+                        if (r.getStudyHours() < currentValue) { leftSubset.add(r); } else { rightSubset.add(r); }
+                        break;
+                    }
+                    case "financialStress": {
+                        if (r.getFinancialStress() < currentValue) { leftSubset.add(r); } else { rightSubset.add(r); }
+                        break;
+                    }
                 }
             }
 
@@ -175,12 +270,26 @@ public class Node {
     private String getValueForCategoricalSplit(String attribute) {
         List<String> valuesToCheck;
         switch (attribute) {
-            case "gender": valuesToCheck = Arrays.asList("Male", "Female", "Other"); break;
-            case "sleepDuration": valuesToCheck = Arrays.asList("< 5 hours", "5-6 hours", "6-7 hours", "7-8 hours", "> 8 hours"); break;
-            case "dietaryHabits": valuesToCheck = Arrays.asList("Unhealthy", "Moderate", "Healthy", "Very Healthy"); break;
+            case "gender": {
+                valuesToCheck = Arrays.asList("Male", "Female", "Other");
+                break;
+            }
+            case "sleepDuration": {
+                valuesToCheck = Arrays.asList("< 5 hours", "5-6 hours", "6-7 hours", "7-8 hours", "> 8 hours");
+                break;
+            }
+            case "dietaryHabits": {
+                valuesToCheck = Arrays.asList("Unhealthy", "Moderate", "Healthy", "Very Healthy");
+                break;
+            }
             case "suicidalThoughts":
-            case "familyHistory": valuesToCheck = Arrays.asList("true", "false"); break;
-            default: throw new RuntimeException("Attribute type not found: " + attribute);
+            case "familyHistory": {
+                valuesToCheck = Arrays.asList("true", "false");
+                break;
+            }
+            default: {
+                throw new RuntimeException("Attribute type not found: " + attribute);
+            }
         }
 
         String bestValue = null;
@@ -190,11 +299,26 @@ public class Node {
             RecordCollection rightSubset = new RecordCollection();
             for (Record r : subset) {
                 switch (attribute) {
-                    case "gender": if (r.getGender().equals(v)) leftSubset.add(r); else rightSubset.add(r); break;
-                    case "sleepDuration": if (r.getSleepDuration().equals(v)) leftSubset.add(r); else rightSubset.add(r); break;
-                    case "dietaryHabits": if (r.getDietaryHabits().equals(v)) leftSubset.add(r); else rightSubset.add(r); break;
-                    case "suicidalThoughts": if (String.valueOf(r.getSuicidalThoughts()).equals(v)) leftSubset.add(r); else rightSubset.add(r); break;
-                    case "familyHistory": if (String.valueOf(r.getFamilyHistory()).equals(v)) leftSubset.add(r); else rightSubset.add(r); break;
+                    case "gender": {
+                        if (r.getGender().equals(v)) { leftSubset.add(r); } else { rightSubset.add(r); }
+                        break;
+                    }
+                    case "sleepDuration": {
+                        if (r.getSleepDuration().equals(v)) { leftSubset.add(r); } else { rightSubset.add(r); }
+                        break;
+                    }
+                    case "dietaryHabits": {
+                        if (r.getDietaryHabits().equals(v)) { leftSubset.add(r); } else { rightSubset.add(r); }
+                        break;
+                    }
+                    case "suicidalThoughts": {
+                        if (String.valueOf(r.getSuicidalThoughts()).equals(v)) { leftSubset.add(r); } else { rightSubset.add(r); }
+                        break;
+                    }
+                    case "familyHistory": {
+                        if (String.valueOf(r.getFamilyHistory()).equals(v)) { leftSubset.add(r); } else { rightSubset.add(r); }
+                        break;
+                    }
                 }
             }
 
@@ -215,16 +339,46 @@ public class Node {
 
         for (Record record : subset) {
             switch (attribute) {
-                case "gender": if (record.getGender().equals(categoricalValue)) leftSubset.add(record); else rightSubset.add(record); break;
-                case "age": if (record.getAge() < numericalValue) leftSubset.add(record); else rightSubset.add(record); break;
-                case "academicPressure": if (record.getAcademicPressure() < numericalValue) leftSubset.add(record); else rightSubset.add(record); break;
-                case "studySatisfaction": if (record.getStudySatisfaction() < numericalValue) leftSubset.add(record); else rightSubset.add(record); break;
-                case "sleepDuration": if (record.getSleepDuration().equals(categoricalValue)) leftSubset.add(record); else rightSubset.add(record); break;
-                case "dietaryHabits": if (record.getDietaryHabits().equals(categoricalValue)) leftSubset.add(record); else rightSubset.add(record); break;
-                case "suicidalThoughts": if (record.getSuicidalThoughts()) leftSubset.add(record); else rightSubset.add(record); break;
-                case "studyHours": if (record.getStudyHours() < numericalValue) leftSubset.add(record); else rightSubset.add(record); break;
-                case "financialStress": if (record.getFinancialStress() < numericalValue) leftSubset.add(record); else rightSubset.add(record); break;
-                case "familyHistory": if (record.getFamilyHistory()) leftSubset.add(record); else rightSubset.add(record); break;
+                case "gender": {
+                    if (record.getGender().equals(categoricalValue)) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "age": {
+                    if (record.getAge() < numericalValue) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "academicPressure": {
+                    if (record.getAcademicPressure() < numericalValue) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "studySatisfaction": {
+                    if (record.getStudySatisfaction() < numericalValue) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "sleepDuration": {
+                    if (record.getSleepDuration().equals(categoricalValue)) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "dietaryHabits": {
+                    if (record.getDietaryHabits().equals(categoricalValue)) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "suicidalThoughts": {
+                    if (record.getSuicidalThoughts()) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "studyHours": {
+                    if (record.getStudyHours() < numericalValue) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "financialStress": {
+                    if (record.getFinancialStress() < numericalValue) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "familyHistory": {
+                    if (record.getFamilyHistory()) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
             }
         }
 
@@ -238,20 +392,49 @@ public class Node {
 
         for (Record record : subset) {
             switch (attribute) {
-                case "gender": if (record.getGender().equals(categoricalValue)) leftSubset.add(record); else rightSubset.add(record); break;
-                case "age": if (record.getAge() < numericalValue) leftSubset.add(record); else rightSubset.add(record); break;
-                case "academicPressure": if (record.getAcademicPressure() < numericalValue) leftSubset.add(record); else rightSubset.add(record); break;
-                case "studySatisfaction": if (record.getStudySatisfaction() < numericalValue) leftSubset.add(record); else rightSubset.add(record); break;
-                case "sleepDuration": if (record.getSleepDuration().equals(categoricalValue)) leftSubset.add(record); else rightSubset.add(record); break;
-                case "dietaryHabits": if (record.getDietaryHabits().equals(categoricalValue)) leftSubset.add(record); else rightSubset.add(record); break;
-                case "suicidalThoughts": if (record.getSuicidalThoughts()) leftSubset.add(record); else rightSubset.add(record); break;
-                case "studyHours": if (record.getStudyHours() < numericalValue) leftSubset.add(record); else rightSubset.add(record); break;
-                case "financialStress": if (record.getFinancialStress() < numericalValue) leftSubset.add(record); else rightSubset.add(record); break;
-                case "familyHistory": if (record.getFamilyHistory()) leftSubset.add(record); else rightSubset.add(record); break;
+                case "gender": {
+                    if (record.getGender().equals(categoricalValue)) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "age": {
+                    if (record.getAge() < numericalValue) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "academicPressure": {
+                    if (record.getAcademicPressure() < numericalValue) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "studySatisfaction": {
+                    if (record.getStudySatisfaction() < numericalValue) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "sleepDuration": {
+                    if (record.getSleepDuration().equals(categoricalValue)) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "dietaryHabits": {
+                    if (record.getDietaryHabits().equals(categoricalValue)) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "suicidalThoughts": {
+                    if (record.getSuicidalThoughts()) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "studyHours": {
+                    if (record.getStudyHours() < numericalValue) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "financialStress": {
+                    if (record.getFinancialStress() < numericalValue) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
+                case "familyHistory": {
+                    if (record.getFamilyHistory()) { leftSubset.add(record); } else { rightSubset.add(record); }
+                    break;
+                }
             }
         }
 
-        // ✅ extra guard against empty subsets
         if (leftSubset.size() == 0 || rightSubset.size() == 0) {
             terminal = true;
             return;
