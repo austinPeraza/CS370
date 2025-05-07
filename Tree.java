@@ -36,4 +36,35 @@ public class Tree {
             return traverse(next, rec);
         }
     }
+
+    protected Node getHead() {
+        return head;
+    }
+
+    protected void setHead(Node head) {
+        this.head = head;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        } else {
+            Tree other = (Tree) obj;
+            return (this.head.equals(other.getHead())) ? true : false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return toStringHelper(head);
+    }
+
+    private String toStringHelper(Node node) {
+        if (node.isTerminal()) {
+            return node.toString();
+        } else {
+            return node.toString() + "\n" + toStringHelper(node.getLeftChild()) + "\n" + (node.getRightChild());
+        }
+    }
 }
