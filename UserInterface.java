@@ -197,12 +197,20 @@ public class UserInterface {
         JCheckBox familyBox = new JCheckBox("Yes");
         panel.add(familyBox);
 
-        int option = JOptionPane.showConfirmDialog(
-            frame, panel, "Enter Your Information",
-            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+        String[] options = {"Submit", "Cancel"};
+        int option = JOptionPane.showOptionDialog(
+            frame,
+            panel,
+            "Enter Your Information",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            options,
+            options[0]
         );
+        
 
-        if (option == JOptionPane.OK_OPTION) {
+        if (option == 0) {
             try {
                 Record record = new Record();
                 record.setGender((String) genderBox.getSelectedItem());
