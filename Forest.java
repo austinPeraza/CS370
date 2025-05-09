@@ -29,23 +29,17 @@ public class Forest {
         return sample;
     }
 
-    /** Train up to 10 trees, reporting progress */
-    public void trainForest(RecordCollection data, ProgressListener listener) {
+    /** Train specified number of trees, reporting progress */
+    public void trainForest(RecordCollection data, int numTrees, ProgressListener listener) {
         cancelRequested = false;
         trees.clear();
-        final int TOTAL = 10;
-        for (int i = 0; i < TOTAL; i++) {
+        for (int i = 0; i < numTrees; i++) {
             if (cancelRequested) break;
             RecordCollection sample = bootstrap(data);
             Tree t = new Tree();
-            try {
-                t.buildTree(sample);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("Error in Tree.buildTree: " + e.getMessage(), e);
-            }
+            t.buildTree(sample);
             trees.add(t);
-            if (listener != null) listener.onProgress(i + 1, TOTAL);
+            if (listener != null) listener.onProgress(i + 1, numTrees);
         }
     }
 

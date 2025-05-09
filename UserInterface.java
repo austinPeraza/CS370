@@ -8,7 +8,7 @@ public class UserInterface {
     private JFrame frame;
     private Forest forest;
     private WellnessFeedback feedback;
-    private boolean trainingCompleted = false;  
+    private boolean trainingCompleted = false;
 
     public UserInterface() {
         frame = new JFrame("Depression Prediction Program");
@@ -23,9 +23,9 @@ public class UserInterface {
     public void displayMenu() {
         JPanel panel = new JPanel(new GridLayout(3, 1, 10, 10));
 
-        JButton trainButton    = new JButton("Train Model with Your Data");
+        JButton trainButton = new JButton("Train Model with Your Data");
         JButton userDataButton = new JButton("Enter Your Information");
-        JButton exitButton     = new JButton("Exit");
+        JButton exitButton = new JButton("Exit");
 
         trainButton.addActionListener(e -> displayTrainingScreen());
         userDataButton.addActionListener(e -> displayUserDataScreen());
@@ -41,6 +41,26 @@ public class UserInterface {
     }
 
     public void displayTrainingScreen() {
+        String numTreesStr = JOptionPane.showInputDialog(
+            frame,
+            "Enter number of trees (recommended: 50–200):",
+            "Set Number of Trees",
+            JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (numTreesStr == null) return;  // user canceled
+
+        int numTrees;
+        try {
+            numTrees = Integer.parseInt(numTreesStr);
+            if (numTrees <= 0) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(frame,
+                "Invalid number of trees. Please enter a positive integer.",
+                "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Select CSV Data File");
         if (chooser.showOpenDialog(frame) != JFileChooser.APPROVE_OPTION) return;
@@ -58,13 +78,12 @@ public class UserInterface {
 
         JDialog progress = new JDialog(frame, "Training Forest…", true);
         JLabel label = new JLabel("Starting…");
-        final int TOTAL = 10;
-        JProgressBar bar = new JProgressBar(0, TOTAL);
+        JProgressBar bar = new JProgressBar(0, numTrees);
         bar.setStringPainted(true);
         bar.setIndeterminate(true);
         JButton cancel = new JButton("Cancel");
 
-        progress.setLayout(new BorderLayout(8,8));
+        progress.setLayout(new BorderLayout(8, 8));
         progress.add(label, BorderLayout.NORTH);
         progress.add(bar, BorderLayout.CENTER);
         progress.add(cancel, BorderLayout.SOUTH);
@@ -74,7 +93,7 @@ public class UserInterface {
         SwingWorker<Void, Integer> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
-                forest.trainForest(data, (done, total) -> publish(done));
+                forest.trainForest(data, numTrees, (done, total) -> publish(done));
                 return null;
             }
 
@@ -82,18 +101,18 @@ public class UserInterface {
             protected void process(List<Integer> chunks) {
                 if (bar.isIndeterminate()) {
                     bar.setIndeterminate(false);
-                    label.setText("Built tree 0 of " + TOTAL + "…");
+                    label.setText("Built tree 0 of " + numTrees + "…");
                 }
                 int done = chunks.get(chunks.size() - 1);
                 bar.setValue(done);
-                label.setText("Built tree " + done + " of " + TOTAL);
+                label.setText("Built tree " + done + " of " + numTrees);
             }
 
             @Override
             protected void done() {
                 progress.dispose();
                 try {
-                    get();  
+                    get();
                     trainingCompleted = true;
                     System.out.println("DEBUG: forest has " + forest.getTrees().size() + " trees after training.");
                     JOptionPane.showMessageDialog(frame,
@@ -104,15 +123,13 @@ public class UserInterface {
                         "Training cancelled.",
                         "Cancelled", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
-                    ex.printStackTrace();  // ✅ print full stack trace to console
+                    ex.printStackTrace();
                     String message = (ex.getCause() != null && ex.getCause().getMessage() != null) ?
-                        ex.getCause().getMessage() :
-                        ex.getMessage();
+                        ex.getCause().getMessage() : ex.getMessage();
                     JOptionPane.showMessageDialog(frame,
                         "Error during training: " + message,
                         "Training Error", JOptionPane.ERROR_MESSAGE);
                 }
-                    
             }
         };
 
@@ -125,6 +142,7 @@ public class UserInterface {
         progress.setVisible(true);
     }
 
+    // Keep your displayUserDataScreen() and displayWellnessScore() as-is
     public void displayUserDataScreen() {
         if (!trainingCompleted) {
             JOptionPane.showMessageDialog(frame,
@@ -135,56 +153,46 @@ public class UserInterface {
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
 
-        // Gender
         panel.add(new JLabel("Gender:"));
         JComboBox<String> genderBox = new JComboBox<>(new String[]{"Male", "Female", "Other"});
         panel.add(genderBox);
 
-        // Age
         panel.add(new JLabel("Age:"));
         JTextField ageField = new JTextField();
         panel.add(ageField);
 
-        // Academic Pressure (0-5)
         panel.add(new JLabel("Academic Pressure (0-5):"));
         JSpinner pressureSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 5, 1));
         panel.add(pressureSpinner);
 
-        // Study Satisfaction (0-5)
         panel.add(new JLabel("Study Satisfaction (0-5):"));
         JSpinner satisfactionSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 5, 1));
         panel.add(satisfactionSpinner);
 
-        // Sleep Duration
         panel.add(new JLabel("Sleep Duration:"));
         JComboBox<String> sleepBox = new JComboBox<>(new String[]{
             "< 5 hours", "5-6 hours", "6-7 hours", "7-8 hours", "> 8 hours"
         });
         panel.add(sleepBox);
 
-        // Dietary Habits
         panel.add(new JLabel("Dietary Habits:"));
         JComboBox<String> dietBox = new JComboBox<>(new String[]{
             "Unhealthy", "Moderate", "Healthy", "Very Healthy"
         });
         panel.add(dietBox);
 
-        // Suicidal Thoughts
         panel.add(new JLabel("Suicidal Thoughts:"));
         JCheckBox suicidalBox = new JCheckBox("Yes");
         panel.add(suicidalBox);
 
-        // Study Hours
         panel.add(new JLabel("Study Hours:"));
         JTextField hoursField = new JTextField();
         panel.add(hoursField);
 
-        // Financial Stress (1-5)
         panel.add(new JLabel("Financial Stress (1-5):"));
         JSpinner financeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 5, 1));
         panel.add(financeSpinner);
 
-        // Family History
         panel.add(new JLabel("Family History of Depression:"));
         JCheckBox familyBox = new JCheckBox("Yes");
         panel.add(familyBox);
