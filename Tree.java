@@ -1,8 +1,6 @@
-// Tree.java
 public class Tree {
     private Node head;
 
-    /** Build the tree by invoking your Node.split(...) recursively. */
     public void buildTree(RecordCollection data) {
         head = new Node(data);
         head.split(data);
@@ -20,7 +18,7 @@ public class Tree {
         }
     }
 
-    /** Traverse using Node.evaluate and at leaf compute majority decision. */
+    
     public int predict(Record input) {
         if (head == null) throw new IllegalStateException("Tree not built");
         return traverse(head, input);
@@ -28,7 +26,7 @@ public class Tree {
 
     private int traverse(Node node, Record rec) {
         if (node.isTerminal()) {
-            // majority vote: more zeros → 0, else 1
+            
             double p0 = node.subset().percentageOfZeros();
             return p0 > 0.5 ? 0 : 1;
         } else {

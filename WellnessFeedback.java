@@ -24,8 +24,8 @@ public class WellnessFeedback {
         }
         // how often each attribute showed up
 
-        // - uniqueAttributes will store the names of the attributes
-        // - frequencies will store how many times we saw each one
+        // uniqueAttributes will store the names of the attributes
+        // frequencies will store how many times we saw each one
         List<String> uniqueAttributes = new ArrayList<>();
         List<Integer> frequencies = new ArrayList<>();
 
@@ -60,12 +60,12 @@ public class WellnessFeedback {
             }
         }
 
-        // limit it to just the top 5 (if we have that many)
+        // limit it to just the top 5 
         if (uniqueAttributes.size() > 5) {
             uniqueAttributes = uniqueAttributes.subList(0, 5);
         }
 
-        // send it back to whoever asked for it
+        // send it back to user
         return uniqueAttributes;
     }
 }

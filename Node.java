@@ -47,7 +47,6 @@ public class Node {
         return terminal;
     }
 
-    // for testing
     protected void setAttribute(String attribute) {
         this.attribute = attribute;
     }
@@ -278,7 +277,7 @@ public class Node {
                 break;
             }
             case "dietaryHabits": {
-                valuesToCheck = Arrays.asList("Unhealthy", "Moderate", "Healthy", "Very Healthy");
+                valuesToCheck = Arrays.asList("Unhealthy", "Moderate", "Healthy");
                 break;
             }
             case "suicidalThoughts":

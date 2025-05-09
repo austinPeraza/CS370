@@ -142,7 +142,7 @@ public class UserInterface {
         progress.setVisible(true);
     }
 
-    // Keep your displayUserDataScreen() and displayWellnessScore() as-is
+    
     public void displayUserDataScreen() {
         if (!trainingCompleted) {
             JOptionPane.showMessageDialog(frame,
@@ -177,7 +177,7 @@ public class UserInterface {
 
         panel.add(new JLabel("Dietary Habits:"));
         JComboBox<String> dietBox = new JComboBox<>(new String[]{
-            "Unhealthy", "Moderate", "Healthy", "Very Healthy"
+            "Unhealthy", "Moderate", "Healthy", 
         });
         panel.add(dietBox);
 
