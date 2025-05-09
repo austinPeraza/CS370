@@ -4,42 +4,42 @@ import org.junit.Test;
 
 public class UnitTests {
     // create the artificial datasets
-    private RecordCollection artificalDataset1 = new RecordCollection();
-    private RecordCollection artificalDataset2 = new RecordCollection();
-    private RecordCollection artificalDataset3 = new RecordCollection();
+    private RecordCollection artificialDataset1 = new RecordCollection();
+    private RecordCollection artificialDataset2 = new RecordCollection();
+    private RecordCollection artificialDataset3 = new RecordCollection();
 
-    // helper method to initialize the artifical datasets
-    private void initializeArtificalDatasets() {
-        artificalDataset1 = new RecordCollection();
-        artificalDataset2 = new RecordCollection();
-        artificalDataset3 = new RecordCollection();
+    // helper method to initialize the artificial datasets
+    private void initializeArtificialDatasets() {
+        artificialDataset1 = new RecordCollection();
+        artificialDataset2 = new RecordCollection();
+        artificialDataset3 = new RecordCollection();
 
-        artificalDataset1.add(new Record("Female", 22, 0, 3, "5-6 hours", "Unhealthy", false, 6, 4, false, 0));
-        artificalDataset1.add(new Record("Male", 34, 3, 3, "Less than 5 hours", "Healthy", false, 7, 3, true, 0));
-        artificalDataset1.add(new Record("Male", 19, 3, 2, "7-8 hours", "Unhealthy", true, 4, 2, false, 1));
-        artificalDataset1.add(new Record("Female", 27, 2, 5, "Less than 5 hours", "Moderate", false, 8, 5, false, 0));
-        artificalDataset1.add(new Record("Male", 36, 4, 2, "Less than 5 hours", "Unhealthy", false, 12, 4, true, 0));
-        artificalDataset1.add(new Record("Other", 23, 2, 1, "5-6 hours", "Moderate", true, 5, 4, true, 1));
-        artificalDataset1.add(new Record("Female", 31, 1, 3, "7-8 hours", "Moderate", true, 2, 1, false, 1));
-        artificalDataset1.add(new Record("Male", 41, 5, 4, "More than 8 hours", "Healthy", false, 10, 1, true, 0));
+        artificialDataset1.add(new Record("Female", 22, 0, 3, "5-6 hours", "Unhealthy", false, 6, 4, false, 0));
+        artificialDataset1.add(new Record("Male", 34, 3, 3, "Less than 5 hours", "Healthy", false, 7, 3, true, 0));
+        artificialDataset1.add(new Record("Male", 19, 3, 2, "7-8 hours", "Unhealthy", true, 4, 2, false, 1));
+        artificialDataset1.add(new Record("Female", 27, 2, 5, "Less than 5 hours", "Moderate", false, 8, 5, false, 0));
+        artificialDataset1.add(new Record("Male", 36, 4, 2, "Less than 5 hours", "Unhealthy", false, 12, 4, true, 0));
+        artificialDataset1.add(new Record("Other", 23, 2, 1, "5-6 hours", "Moderate", true, 5, 4, true, 1));
+        artificialDataset1.add(new Record("Female", 31, 1, 3, "7-8 hours", "Moderate", true, 2, 1, false, 1));
+        artificialDataset1.add(new Record("Male", 41, 5, 4, "More than 8 hours", "Healthy", false, 10, 1, true, 0));
 
-        artificalDataset2.add(new Record("Female", 33, 1, 1, "More than 8 hours", "Healthy", true, 5, 2, false, 0));
-        artificalDataset2.add(new Record("Female", 25, 2, 4, "5-6 hours", "Healthy", false, 8, 4, true, 0));
-        artificalDataset2.add(new Record("Male", 28, 4, 2, "More than 8 hours", "Healthy", true, 6, 5, true, 1));
-        artificalDataset2.add(new Record("Female", 18, 3, 4, "More than 8 hours", "Healthy", true, 9, 2, false, 1));
-        artificalDataset2.add(new Record("Male", 19, 3, 5, "Less than 5 hours", "Moderate", true, 8, 3, true, 1));
-        artificalDataset2.add(new Record("Male", 30, 1, 3, "7-8 hours", "Unhealthy", false, 7, 2, true, 0));
-        artificalDataset2.add(new Record("Female", 31, 3, 3, "5-6 hours", "Unhealthy", false, 12, 2, false, 0));
-        artificalDataset2.add(new Record("Male", 32, 5, 1, "Less than 5 hours", "Moderate", false, 4, 1, false, 1));
+        artificialDataset2.add(new Record("Female", 33, 1, 1, "More than 8 hours", "Healthy", true, 5, 2, false, 0));
+        artificialDataset2.add(new Record("Female", 25, 2, 4, "5-6 hours", "Healthy", false, 8, 4, true, 0));
+        artificialDataset2.add(new Record("Male", 28, 4, 2, "More than 8 hours", "Healthy", true, 6, 5, true, 1));
+        artificialDataset2.add(new Record("Female", 18, 3, 4, "More than 8 hours", "Healthy", true, 9, 2, false, 1));
+        artificialDataset2.add(new Record("Male", 19, 3, 5, "Less than 5 hours", "Moderate", true, 8, 3, true, 1));
+        artificialDataset2.add(new Record("Male", 30, 1, 3, "7-8 hours", "Unhealthy", false, 7, 2, true, 0));
+        artificialDataset2.add(new Record("Female", 31, 3, 3, "5-6 hours", "Unhealthy", false, 12, 2, false, 0));
+        artificialDataset2.add(new Record("Male", 32, 5, 1, "Less than 5 hours", "Moderate", false, 4, 1, false, 1));
 
-        artificalDataset3.add(new Record("Female", 15, 4, 2, "More than 8 hours", "Healthy", false, 8, 3, true, 0));
-        artificalDataset3.add(new Record("Male", 39, 2, 5, "5-6 hours", "Healthy", true, 6, 4, false, 0));
-        artificalDataset3.add(new Record("Female", 23, 1, 3, "More than 8 hours", "Healthy", false, 2, 1, true, 0));
-        artificalDataset3.add(new Record("Male", 32, 5, 4, "Less than 5 hours", "Healthy", true, 4, 5, false, 0));
-        artificalDataset3.add(new Record("Female", 19, 3, 1, "7-8 hours", "Moderate", false, 1, 3, true, 1));
-        artificalDataset3.add(new Record("Male", 50, 1, 5, "7-8 hours", "Unhealthy", true, 5, 4, false, 1));
-        artificalDataset3.add(new Record("Female", 31, 2, 3, "5-6 hours", "Unhealthy", false, 7, 2, true, 1));
-        artificalDataset3.add(new Record("Male", 28, 5, 2, "Less than 5 hours", "Moderate", true, 3, 1, false, 1));
+        artificialDataset3.add(new Record("Female", 15, 4, 2, "More than 8 hours", "Healthy", false, 8, 3, true, 0));
+        artificialDataset3.add(new Record("Male", 39, 2, 5, "5-6 hours", "Healthy", true, 6, 4, false, 0));
+        artificialDataset3.add(new Record("Female", 23, 1, 3, "More than 8 hours", "Healthy", false, 2, 1, true, 0));
+        artificialDataset3.add(new Record("Male", 32, 5, 4, "Less than 5 hours", "Healthy", true, 4, 5, false, 0));
+        artificialDataset3.add(new Record("Female", 19, 3, 1, "7-8 hours", "Moderate", false, 1, 3, true, 1));
+        artificialDataset3.add(new Record("Male", 50, 1, 5, "7-8 hours", "Unhealthy", true, 5, 4, false, 1));
+        artificialDataset3.add(new Record("Female", 31, 2, 3, "5-6 hours", "Unhealthy", false, 7, 2, true, 1));
+        artificialDataset3.add(new Record("Male", 28, 5, 2, "Less than 5 hours", "Moderate", true, 3, 1, false, 1));
     }
 
     // UNIT TESTS FOR NODE
@@ -62,8 +62,8 @@ public class UnitTests {
 
         // create actual outcome
         Node actualNode = new Node();
-        initializeArtificalDatasets();
-        actualNode.split(artificalDataset1);
+        initializeArtificialDatasets();
+        actualNode.split(artificialDataset1);
 
         // assert that the children are equal & that the node split on suicidal thoughts
         assertEquals("suicidalThoughts", actualNode.getAttribute());
@@ -90,8 +90,8 @@ public class UnitTests {
 
         // create actual outcome
         Node actualNode = new Node();
-        initializeArtificalDatasets();
-        actualNode.split(artificalDataset2);
+        initializeArtificialDatasets();
+        actualNode.split(artificialDataset2);
 
         // assert that the children are equal & that the node split on academic pressure
         // with the value 3
@@ -120,8 +120,8 @@ public class UnitTests {
 
         // create actual outcome
         Node actualNode = new Node();
-        initializeArtificalDatasets();
-        actualNode.split(artificalDataset3);
+        initializeArtificialDatasets();
+        actualNode.split(artificialDataset3);
 
         // assert that the children are equal & that the node split on dietary habits
         // with the value "healthy"
@@ -134,12 +134,12 @@ public class UnitTests {
     // UNIT TESTS FOR TREE
     @Test
     public void buildTreeFromSingleAttribute() {
-        // initialize artifical datasets
-        initializeArtificalDatasets();
+        // initialize artificial datasets
+        initializeArtificialDatasets();
 
         // create expected outcome
         Tree expectedTree = new Tree();
-        expectedTree.setHead(new Node(artificalDataset1));
+        expectedTree.setHead(new Node(artificialDataset1));
         expectedTree.getHead().setAttribute("suicidalThoughts");
 
         RecordCollection expectedLeftSubset = new RecordCollection();
@@ -159,7 +159,7 @@ public class UnitTests {
 
         // create actual outcome
         Tree actualTree = new Tree();
-        actualTree.buildTree(artificalDataset1);
+        actualTree.buildTree(artificialDataset1);
 
         // assert that the two trees are equivalent
         assertEquals(expectedTree, actualTree);
@@ -167,12 +167,12 @@ public class UnitTests {
 
     @Test
     public void buildTreeFromMultipleAttributes() {
-        // initialize artifical datasets
-        initializeArtificalDatasets();
+        // initialize artificial datasets
+        initializeArtificialDatasets();
 
         // create expected outcome
         Tree expectedTree = new Tree();
-        expectedTree.setHead(new Node(artificalDataset2));
+        expectedTree.setHead(new Node(artificialDataset2));
         expectedTree.getHead().setAttribute("academicPressure");
 
         RecordCollection expectedLeftSubset = new RecordCollection();
@@ -204,7 +204,7 @@ public class UnitTests {
 
         // create actual outcome
         Tree actualTree = new Tree();
-        actualTree.buildTree(artificalDataset2);
+        actualTree.buildTree(artificialDataset2);
 
         // assert that the two trees are equivalent
         assertEquals(expectedTree, actualTree);
