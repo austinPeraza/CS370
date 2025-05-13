@@ -15,7 +15,7 @@ public class AcceptanceTests {
             return;
         }
         forest = new Forest();
-        forest.trainForest(trainingDataset, 100, null);
+        forest.trainForest(trainingDataset, 200, null);
         try {
             testDataset = RecordCollection.loadFromCSV("data/test_dataset_100.csv");
         } catch (Exception e) {
@@ -31,8 +31,8 @@ public class AcceptanceTests {
         // check number of mistakes
         int mistakes = 0;
         for (Record record : testDataset) {
-            float score = forest.predictScore(record);
-            if ((score >= 0.5 && record.getWellnessScore() != 1) || (score <= 0.5 && record.getWellnessScore() != 0)) {
+            float score = (forest.predictScore(record) >= 0.5) ? 1 : 0;
+            if (score != record.getWellnessScore()) {
                 mistakes++;
             }
         }

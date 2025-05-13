@@ -37,7 +37,8 @@ public class Forest {
             if (cancelRequested) break;
             RecordCollection sample = bootstrap(data);
             Tree t = new Tree();
-            t.buildTree(sample);
+            ArrayList<String> features = getRandomFeatures(5);
+            t.buildTree(sample, features);
             trees.add(t);
             if (listener != null) listener.onProgress(i + 1, numTrees);
         }
@@ -49,6 +50,23 @@ public class Forest {
         float sum = 0;
         for (Tree t : trees) sum += t.predict(input);
         return sum / trees.size();
+    }
+
+    /** Choose random features for each tree. */
+    public ArrayList<String> getRandomFeatures(int n) {
+        String[] features = {"gender", "age", "academicPressure", "studySatisfaction", "sleepDuration", "dietaryHabits",
+                             "suicidalThoughts", "studyHours", "financialStress", "familyHistory"};
+        ArrayList<String> returnList = new ArrayList<String>();
+        for (int i = 0; i < features.length; i++) {
+            returnList.add(features[i]);
+        }
+
+        Random rand = new Random();
+        for (int i = 0; i < features.length - n; i++) {
+            returnList.remove(rand.nextInt(features.length - i));
+        }
+
+        return returnList;
     }
 
     public List<Tree> getTrees() { return trees; }

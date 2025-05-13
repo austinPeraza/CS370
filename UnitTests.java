@@ -1,5 +1,7 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 public class UnitTests {
@@ -7,6 +9,7 @@ public class UnitTests {
     private RecordCollection artificialDataset1 = new RecordCollection();
     private RecordCollection artificialDataset2 = new RecordCollection();
     private RecordCollection artificialDataset3 = new RecordCollection();
+    private ArrayList<String> features = new ArrayList<String>();
 
     // helper method to initialize the artificial datasets
     private void initializeArtificialDatasets() {
@@ -40,6 +43,12 @@ public class UnitTests {
         artificialDataset3.add(new Record("Male", 50, 1, 5, "7-8 hours", "Unhealthy", true, 5, 4, false, 1));
         artificialDataset3.add(new Record("Female", 31, 2, 3, "5-6 hours", "Unhealthy", false, 7, 2, true, 1));
         artificialDataset3.add(new Record("Male", 28, 5, 2, "Less than 5 hours", "Moderate", true, 3, 1, false, 1));
+
+        String[] featuresArray = {"gender", "age", "academicPressure", "studySatisfaction", "sleepDuration", "dietaryHabits",
+                                 "suicidalThoughts", "studyHours", "financialStress", "familyHistory"};
+        for (int i = 0; i < featuresArray.length; i++) {
+            features.add(featuresArray[i]);
+        }
     }
 
     // UNIT TESTS FOR NODE
@@ -63,7 +72,7 @@ public class UnitTests {
         // create actual outcome
         Node actualNode = new Node();
         initializeArtificialDatasets();
-        actualNode.split(artificialDataset1);
+        actualNode.split(artificialDataset1, features);
 
         // assert that the children are equal & that the node split on suicidal thoughts
         assertEquals("suicidalThoughts", actualNode.getAttribute());
@@ -91,7 +100,7 @@ public class UnitTests {
         // create actual outcome
         Node actualNode = new Node();
         initializeArtificialDatasets();
-        actualNode.split(artificialDataset2);
+        actualNode.split(artificialDataset2, features);
 
         // assert that the children are equal & that the node split on academic pressure
         // with the value 3
@@ -121,7 +130,7 @@ public class UnitTests {
         // create actual outcome
         Node actualNode = new Node();
         initializeArtificialDatasets();
-        actualNode.split(artificialDataset3);
+        actualNode.split(artificialDataset3, features);
 
         // assert that the children are equal & that the node split on dietary habits
         // with the value "healthy"
@@ -159,7 +168,7 @@ public class UnitTests {
 
         // create actual outcome
         Tree actualTree = new Tree();
-        actualTree.buildTree(artificialDataset1);
+        actualTree.buildTree(artificialDataset1, features);
 
         // assert that the two trees are equivalent
         assertEquals(expectedTree, actualTree);
@@ -204,7 +213,7 @@ public class UnitTests {
 
         // create actual outcome
         Tree actualTree = new Tree();
-        actualTree.buildTree(artificialDataset2);
+        actualTree.buildTree(artificialDataset2, features);
 
         // assert that the two trees are equivalent
         assertEquals(expectedTree, actualTree);

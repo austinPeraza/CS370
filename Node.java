@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
 public class Node {
 
@@ -140,7 +141,7 @@ public class Node {
         }
     }
 
-    public void split(RecordCollection data) {
+    public void split(RecordCollection data, ArrayList<String> features) {
         subset = data;
 
         if (data == null || data.size() == 0 || data.size() == 1 ||
@@ -156,13 +157,7 @@ public class Node {
         String bestCategoricalValue = null;
         double bestScore = -1;
 
-        String[] attributeList = {
-            "gender", "age", "academicPressure", "studySatisfaction",
-            "sleepDuration", "dietaryHabits", "suicidalThoughts",
-            "studyHours", "financialStress", "familyHistory"
-        };
-
-        for (String a : attributeList) {
+        for (String a : features) {
             double currentNumericalValue = 0;
             String currentCategoricalValue = null;
 

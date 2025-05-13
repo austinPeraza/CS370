@@ -1,20 +1,22 @@
+import java.util.ArrayList;
+
 public class Tree {
     private Node head;
 
-    public void buildTree(RecordCollection data) {
+    public void buildTree(RecordCollection data, ArrayList<String> features) {
         head = new Node(data);
-        head.split(data);
-        grow(head);
+        head.split(data, features);
+        grow(head, features);
     }
 
-    private void grow(Node node) {
+    private void grow(Node node, ArrayList<String> features) {
         if (!node.isTerminal()) {
             Node left  = node.getLeftChild();
             Node right = node.getRightChild();
-            left.split(left.subset());
-            grow(left);
-            right.split(right.subset());
-            grow(right);
+            left.split(left.subset(), features);
+            grow(left, features);
+            right.split(right.subset(), features);
+            grow(right, features);
         }
     }
 
